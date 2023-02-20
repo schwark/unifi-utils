@@ -7,8 +7,12 @@ import http.client
 import argparse
 import getpass
 import re
+import logging
+log = logging.getLogger(__name__)
+log.setLevel(level=logging.DEBUG)
 
-http.client.HTTPConnection.debuglevel = 2
+http.client.HTTPConnection.debuglevel = 0
+requests.packages.urllib3.disable_warnings()
 
 class Secret:
     
@@ -47,6 +51,7 @@ class UniFi:
         return response
     
     def page(self, url, data=None, headers=None, method='GET'):
+        log.debug('getting page '+url)
         if not self.auth:
             self.login()
         url = self.base+url if not url.startswith('http') else url

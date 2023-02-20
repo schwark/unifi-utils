@@ -1,0 +1,12 @@
+{
+    "Firewall Group Name1": [ 
+        "discordstatus.com", 
+        "top.gg"
+    ],
+    "Firewall Group #2": [
+        "accounts.google.com",
+        "www.google-analytics.com",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+    ]
+}

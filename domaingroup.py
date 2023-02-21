@@ -3,15 +3,16 @@ import pyotp
 import json
 import requests
 from urllib.error import HTTPError
-import http.client
 import argparse
 import getpass
 import re
 import logging
 log = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.DEBUG)
 log.setLevel(level=logging.DEBUG)
 
-http.client.HTTPConnection.debuglevel = 0
+#import http.client
+#http.client.HTTPConnection.debuglevel = 0
 requests.packages.urllib3.disable_warnings()
 
 class Secret:
@@ -97,13 +98,13 @@ def get_ips_by_dns_lookup(target, port=None):
     '''
     if not port:
         port = 443
-
+    log.debug("getting ips for "+target)
     return list(map(lambda x: x[4][0], socket.getaddrinfo('{}.'.format(target),port,type=socket.SOCK_STREAM)))
 
 def get_domains(unifi, url):
     html = unifi.page(url).text
-    domains = re.findall(r'\<(link|script|style).+?(src|href)=[\'\"].*?//([^/]+)', html)
-    domains.extend(re.findall(r'(\@import).*?([\'\"]).*?//([^/]+)', html))
+    domains = re.findall(r'\<(link|script|style).+?(src|href)=[\'\"].*?//([^/\"\']+)', html)
+    domains.extend(re.findall(r'(\@import).*?([\'\"]).*?//([^/\"\']+)', html))
     domains = list(map(lambda x: x[2], domains))
     return domains
 
@@ -121,6 +122,7 @@ def get_rules_ips(unifi, rules):
             for domain in rules[name]:
                 ex_domains.extend(get_domains(unifi, 'https://'+domain))
         ips = []
+        ex_domains = list(set(ex_domains))
         for domain in ex_domains:
             ips.extend(get_ips_by_dns_lookup(domain))
         result[name] = ips

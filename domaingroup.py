@@ -117,10 +117,12 @@ def get_rules():
 def get_rules_ips(unifi, rules):
     result = {}
     for name in rules:
-        ex_domains = rules[name].copy()
-        if 'Allow' in name:
-            for domain in rules[name]:
+        ex_domains = []
+        for domain in rules[name]:
+            if domain.endswith('.'):
+                domain = domain[:-1]
                 ex_domains.extend(get_domains(unifi, 'https://'+domain))
+            ex_domains.append(domain)
         ips = []
         ex_domains = list(set(ex_domains))
         for domain in ex_domains:

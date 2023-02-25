@@ -159,6 +159,6 @@ for rule in rules:
         if new_list != old_list:
             rule['group_members'] = list(new_list)
             result = unifi.page('/proxy/network/api/s/default/rest/firewallgroup/'+rule['_id'], method='PUT', data=rule)
-            print(result)
+            print(name,': ',list(new_list.difference(old_list)))
 
 

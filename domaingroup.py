@@ -126,7 +126,10 @@ def get_rules_ips(unifi, rules):
         ips = []
         ex_domains = list(set(ex_domains))
         for domain in ex_domains:
-            ips.extend(get_ips_by_dns_lookup(domain))
+            if re.match(r'^\d+\.\d+\.\d+\.\d+.*$', domain):
+                ips.append(domain)
+            else:
+                ips.extend(get_ips_by_dns_lookup(domain))
         result[name] = ips
     return result    
 

@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 log.setLevel(level=logging.DEBUG)
 
 import http.client
-http.client.HTTPConnection.debuglevel = 1
+http.client.HTTPConnection.debuglevel = 0
 requests.packages.urllib3.disable_warnings()
 
 class Secret:

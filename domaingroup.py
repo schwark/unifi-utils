@@ -11,8 +11,8 @@ log = logging.getLogger(__name__)
 #logging.basicConfig(level=logging.DEBUG)
 log.setLevel(level=logging.DEBUG)
 
-#import http.client
-#http.client.HTTPConnection.debuglevel = 0
+import http.client
+http.client.HTTPConnection.debuglevel = 1
 requests.packages.urllib3.disable_warnings()
 
 class Secret:
@@ -62,8 +62,9 @@ class UniFi:
             method = 'POST' if 'GET' == method else method
         if headers:
             self.browser.headers.update(headers)
+        self.browser.headers.update({'Referer': url, 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.3 Safari/605.1.15'})
         try:
-            response = self.browser.request(method, url, data=data, verify=False)
+            response = self.browser.request(method, url, data=data, verify=False, allow_redirects=True)
             if response.status_code == requests.codes.ok:
                 response = self.process_response(response)
         except HTTPError as error:
@@ -106,6 +107,7 @@ def get_domains(unifi, url):
     domains = re.findall(r'\<(link|script|style).+?(src|href)=[\'\"].*?//([^/\"\']+)', html)
     domains.extend(re.findall(r'(\@import).*?([\'\"]).*?//([^/\"\']+)', html))
     domains = list(map(lambda x: x[2], domains))
+    print("got domains for "+url+" : "+str(domains))
     return domains
 
 def get_rules():
@@ -148,7 +150,7 @@ secret = '' if str(args.secret) == str(Secret.DEFAULT) else str(args.secret)
 unifi = UniFi(args.ip, args.username, args.password, secret)
 rules = unifi.page('/proxy/network/api/s/default/rest/firewallgroup')
 new_ips = get_rules_ips(unifi, get_rules())
-#print(new_ips)
+#print(rules)
 
 for rule in rules:
     name = rule['name']

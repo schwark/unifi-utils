@@ -84,7 +84,14 @@ class UniFi:
         response = self.page(url, data=data, headers=headers)
         self.auth = False if 'unique_id' not in response else True
 
-
+def get_ip(target, port=443):
+    ip = []
+    try:
+        ip = socket.getaddrinfo('{}.'.format(target),port,type=socket.SOCK_STREAM)
+    except:
+        pass
+    return ip    
+    
 def get_ips_by_dns_lookup(target, port=None):
     '''
         this function takes the passed target and optional port and does a dns
@@ -100,7 +107,7 @@ def get_ips_by_dns_lookup(target, port=None):
     if not port:
         port = 443
     log.debug("getting ips for "+target)
-    return list(map(lambda x: x[4][0], socket.getaddrinfo('{}.'.format(target),port,type=socket.SOCK_STREAM)))
+    return list(map(lambda x: x[4][0], get_ip(target)))
 
 def get_domains(unifi, url):
     html = unifi.page(url).text

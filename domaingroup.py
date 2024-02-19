@@ -68,7 +68,9 @@ class UniFi:
             if response.status_code == requests.codes.ok:
                 response = self.process_response(response)
         except HTTPError as error:
+            log.debug('error getting response '+error.code)
             response_status = error.code # 404, 500, etc
+        log.debug(response)
         return response
 
     def login(self):
@@ -113,7 +115,7 @@ def get_domains(unifi, url):
     html = unifi.page(url).text
     domains = re.findall(r'\<(link|script|style).+?(src|href)=[\'\"].*?//([^/\"\']+)', html)
     domains.extend(re.findall(r'(\@import).*?([\'\"]).*?//([^/\"\']+)', html))
-    domains = list(map(lambda x: x[2], domains))
+    domains = list(set(map(lambda x: x[2], domains)))
     print("got domains for "+url+" : "+str(domains))
     return domains
 

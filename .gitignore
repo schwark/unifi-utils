@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 rules.json
+.DS_Store

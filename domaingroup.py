@@ -112,7 +112,11 @@ def get_ips_by_dns_lookup(target, port=None):
     return list(map(lambda x: x[4][0], get_ip(target)))
 
 def get_domains(unifi, url):
-    html = unifi.page(url).text
+    try:
+        html = unifi.page(url).text
+    except:
+        log.error("unable to retrieve "+url)
+        html = ''
     domains = re.findall(r'\<(link|script|style).+?(src|href)=[\'\"].*?//([^/\"\']+)', html)
     domains.extend(re.findall(r'(\@import).*?([\'\"]).*?//([^/\"\']+)', html))
     domains = list(set(map(lambda x: x[2], domains)))
